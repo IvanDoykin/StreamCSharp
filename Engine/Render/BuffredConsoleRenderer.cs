@@ -1,5 +1,4 @@
-﻿using Spectre.Console;
-using System.Text;
+﻿using System.Text;
 
 /// <summary>
 /// Tightly linked with Console. Renders contents of the buffer right on the screen. 
@@ -8,6 +7,12 @@ public class BufferedConsoleRenderer : IConsoleRenderer
 {
     private ScreenBuffer _front = new(1, 1);
     private ScreenBuffer _back = new(1, 1);
+
+    /// <summary>
+    /// Just for easier testing. Allows to disable escape-sequences while rendering to test in old console,
+    /// as old console doesn't support Ansi сolors.
+    /// </summary>
+    private bool _disableColors = false;
 
     /// <summary>
     /// Should be set to true when full screen should be re-rendered. For example, when both buffers are cleared.
@@ -57,7 +62,8 @@ public class BufferedConsoleRenderer : IConsoleRenderer
             {
                 continue;
             }
-            AnsiConsole.Cursor.SetPosition(0, y);
+            
+            Console.SetCursorPosition(0, y);
 
             int? lastFg = null;
             int? lastBg = null;
@@ -71,24 +77,30 @@ public class BufferedConsoleRenderer : IConsoleRenderer
                     cell = _emptyCell;
                 }
 
-                //if (cell.Value.Color != lastFg || cell.Value.BgColor != lastBg)
-                //{
-                //    sb.Append(AnsiColor.GetCode(cell.Value.Color, cell.Value.BgColor));
-                //    lastFg = cell.Value.Color;
-                //    lastBg = cell.Value.BgColor;
-                //}
+                if (!_disableColors) {
+                    if (cell.Value.Color != lastFg || cell.Value.BgColor != lastBg) {
+                        sb.Append(AnsiColor.GetCode(cell.Value.Color, cell.Value.BgColor));
+                        lastFg = cell.Value.Color;
+                        lastBg = cell.Value.BgColor;
+                    }
+                }
 
                 sb.Append(cell.Value.Char);
             }
 
-            //sb.Append(AnsiColor.Reset);
-            AnsiConsole.Write(sb.ToString());
-            //sb.Clear();
+            if (!_disableColors) {
+                sb.Append(AnsiColor.Reset);                
+            }
+            
+            // Doesn't work with `AnsiConsole` from `Spectre.Console`, so leaving as designed.
+            Console.Write(sb.ToString());
+            sb.Clear();
         }
 
-        // Swap buffers
-        //(_front, _back) = (_back, _front);
-        //_front.Clear();
+        // Swap buffers and clear front buffer, so we can properly check difference with previous frame
+        // and re-render only changed cells.
+        (_front, _back) = (_back, _front);
+        _front.Clear();
 
         _forceRender = false;
     }

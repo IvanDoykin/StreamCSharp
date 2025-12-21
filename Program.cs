@@ -59,23 +59,110 @@ internal class Program
             //arena.Start();
 
             IConsoleRenderer renderer = new BufferedConsoleRenderer();
-            renderer.SetSize(56, 18);
+            int screenWidth = 56;
+            int screenHeight = 18;
+            int menuWidth = 15;
+            int gameAreaWidth = screenWidth - menuWidth;
+
+            renderer.SetSize(screenWidth, screenHeight + 1); // extra line to prevent scrollbar
+
+            ScreenBuffer menuBuffer = new ScreenBuffer(menuWidth, screenHeight);
+            
             DrawUtils draw = new DrawUtils(renderer.Buffer);
+            DrawUtils drawMenu = new DrawUtils(menuBuffer);
+            
             draw.ResetColor();
 
             int frame = 0;
+            int rectWidth = 5;
+            int rectHeight = 3;
+            
+            int rectX = 1;
+            int rectY = 1;
+            int speedX = 1;
+            int speedY = 1;
+            int score = 0;
 
             while (true)
             {
                 frame++;
-
-                renderer.Buffer.Set(0 + frame % 15, 0, 'B', 15, 0);
-                renderer.Buffer.Set(1 + frame % 15, 0, 'o', 15, 0);
-                renderer.Buffer.Set(2 + frame % 15, 0, 'o', 15, 0);
-                renderer.Buffer.Set(3 + frame % 15, 0, 'b', 15, 0);
-                renderer.Buffer.Set(4 + frame % 15, 0, 's', 15, 0);
-
+                
+                // Нашел почему было моргание через кадр - это потому что в BufferedConsoleRenderer два
+                // буфера - один активный, в котором идёт отрисовка в данный момент, а второй содержит прошлый кадр.
+                // При отрисовке сравнивается какие символы в активном отличаются от прошлого кадра и отрисовываются
+                // только измененные. После отрисовки буферы меняются местами (чтобы не делать лишние копирования) и
+                // активный буфер полностью затирается. Но `draw` был привязан только к одному буферу из двух,
+                // поэтому он рисовал только в четных кадрах - когда этот буфер становился активным.
+                //
+                // Обойти это можно двумя способами:
+                // 1. Если очень хочется рисовать напрямую в экранном буфере, то каждый кадр нужно делать
+                // 
+                //      draw.SetTarget(renderer.Buffer); // Здесь отрисовка переключится на текущий активный буфер.
+                //
+                // 2. Второй способ - не рисовать напрямую в экранном буфере с помощью DrawUtils, а создать отдельный
+                //     ScreenBuffer, рисовать в нем, а в конце скопировать нарисованное в экранный буфер - как это сделано
+                //    с меню ниже.
+                //  Для демонстрации здесь запилил способ 1 + способ 2 показан при отрисовке меню.
+                draw.SetTarget(renderer.Buffer);
+                
+                // ---=== Render Menu ===---
+                
+                drawMenu
+                    .DrawRect(0, 0, menuWidth, screenHeight, DrawUtils.HeavyLine, true)
+                    .DrawTextCentered(menuWidth / 2, 2, $"Frame: {frame}")
+                    .DrawTextCentered(menuWidth / 2, 4, $"Score: {score}");
+                
+                // Копируем то, что было нарисовано в menuBuffer в буфер экрана в нужную позицию.
+                // Возможно, метод можно назвать CopyFrom.
+                renderer.Buffer.DrawFrom(menuBuffer, gameAreaWidth, 0);
+                
+                // ---=== Render Game ===--
+                
+                // Здесь отрисовка идёт напрямую в главный буфер экрана, хотя игровую область можно рисовать
+                // в буфере поменьше и потом копировать на экран. Так бывает проще управлять координатами
+                // отрисовки, поскольку у каждого буфера своя точка отсчета. Но пример как их комбинировать
+                // приведён с menu/drawMenu.
+                draw
+                    // Большой прямоугольник - не только рамку рисует, но и очищает область, поскольку
+                    // отрисовка здесь крайне простая - если объект перемещается, то его прошлую позицию
+                    // нужно затирать вручную. Впрочем, учитывая что это всё происходит в памяти (в буферах),
+                    // о скорости можно не переживать. Можно буфер с динамическими объектами очищать каждый кадр
+                    // и рисовать их заново.
+                    // Пометка - если отрисовка идёт напрямую в буфер экрана, то, в отличие от обычных ScreenBuffer,
+                    // он очищается каждый кадр, поэтому его можно дополнительно не чистить.
+                    // Но в целом я бы рекомендовал рисолвать всё сначала в отдельных буферах, а потом их содержимое
+                    // копировать в нужные позиции в экранный буфер с помощью `renderer.Buffer.DrawFrom(otherBuffer)`. 
+                    .DrawRect(0, 0, gameAreaWidth, screenHeight, DrawUtils.DoubleLine, true)
+                    .SetColor(AnsiColor.Rgb(frame % 6, (frame / 6) % 6, (frame / 36) % 6))
+                    .DrawRect(rectX, rectY, rectWidth, rectHeight, DrawUtils.Rounded, true)
+                    .ResetColor();
+                
                 renderer.Render();
+
+                // ---=== State update ===---
+                
+                var prevSpeedX = speedX;
+                var prevSpeedY = speedY;
+                
+                if (rectX >= gameAreaWidth - rectWidth - 1) {
+                    speedX = -1;
+                } else if (rectX <= 1) {
+                    speedX = 1;
+                }
+
+                if (rectY >= screenHeight - rectHeight - 1) {
+                    speedY = -1;
+                } else if (rectY <= 1) {
+                    speedY = 1;
+                }
+
+                if (prevSpeedX != speedX || prevSpeedY != speedY) {
+                    score++;
+                }
+                
+                rectX += speedX;
+                rectY += speedY;
+                
                 await Task.Delay(500);
             }
         }
