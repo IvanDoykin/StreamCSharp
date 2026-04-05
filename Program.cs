@@ -62,15 +62,17 @@
 
             GameplayLogPrinter gameplayLogPrinter = new GameplayLogPrinter();
             UnitsPrinter unitsPrinter = new UnitsPrinter();
+            StatsPrinter statsPrinter = new StatsPrinter();
+            VitalsPrinter vitalsPrinter = new VitalsPrinter();
 
             Task.Run(() =>
             {
                 Thread.Sleep(1500);
-                Arena arena = new Arena(gameplayLogPrinter, unitsPrinter, SaveLoad<ArenaModel>.Load("Title"));
+                Arena arena = new Arena(gameplayLogPrinter, unitsPrinter, statsPrinter, vitalsPrinter, SaveLoad<ArenaModel>.Load("Title"));
                 arena.Start();
             });
 
-            GameRender render = new GameRender(gameplayLogPrinter, unitsPrinter);
+            GameRender render = new GameRender(gameplayLogPrinter, unitsPrinter, statsPrinter, vitalsPrinter);
 
             //var table = new Table().RoundedBorder();
 

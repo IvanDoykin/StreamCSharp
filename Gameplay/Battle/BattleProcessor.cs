@@ -2,25 +2,34 @@
 {
     private UnitsPrinter _unitsPrinter;
     private GameplayLogPrinter _gameplayLogPrinter;
-    private TurnPrinter _printer;
+    private TurnPrinter _turnPrinter;
+    private StatsPrinter _statsPrinter;
+    private VitalsPrinter _vitalsPrinter;
 
-    public BattleProcessor(UnitsPrinter unitsPrinter, GameplayLogPrinter gameplayLogPrinter, TurnPrinter printer)
+    public BattleProcessor(UnitsPrinter unitsPrinter, GameplayLogPrinter gameplayLogPrinter, TurnPrinter turnPrinter, StatsPrinter statsPrinter, VitalsPrinter vitalsPrinter)
     {
         _unitsPrinter = unitsPrinter;
         _gameplayLogPrinter = gameplayLogPrinter;
-        _printer = printer;
+        _turnPrinter = turnPrinter;
+        _statsPrinter = statsPrinter;
+        _vitalsPrinter = vitalsPrinter;
     }
 
     public void Battle(UnitTurn[] turnCycle, UnitTurn[] enemies, UnitTurn[] allies, UnitTurn attackerTurn, Action onComplete)
     {
-        // Bold Yellow turn
-
-        _printer.Print(turnCycle, attackerTurn);
+        _vitalsPrinter.Reset();
+        _statsPrinter.Reset();
+        _turnPrinter.Print(turnCycle, attackerTurn);
 
         if (attackerTurn.IsAlly)
         {
             ConsoleKeyInfo keyInfo;
             _unitsPrinter.ResetSelect();
+            if (FindUnitByName(turnCycle, _unitsPrinter.GetSelectedUnitName(), out Unit firstTurnUnit))
+            {
+                _statsPrinter.Print(new StatsContext(firstTurnUnit));
+                _vitalsPrinter.Print(new VitalsContext(firstTurnUnit));
+            }
 
             do
             {
@@ -45,6 +54,17 @@
                 {
                     _unitsPrinter.SelectDown();
                     // update stats and equip info
+                }
+
+                if (FindUnitByName(turnCycle, _unitsPrinter.GetSelectedUnitName(), out Unit selectedUnit))
+                {
+                    _statsPrinter.Print(new StatsContext(selectedUnit));
+                    _vitalsPrinter.Print(new VitalsContext(selectedUnit));
+                }
+                else
+                {
+                    _statsPrinter.Reset();
+                    _vitalsPrinter.Reset();
                 }
 
             } while (keyInfo.Key != ConsoleKey.Enter);
@@ -76,6 +96,27 @@
         //}
 
         onComplete();
+    }
+
+    private bool FindUnitByName(UnitTurn[] unitTurns, string name, out Unit unit)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            unit = null;
+            return false;
+        }
+
+        foreach (var unitTurn in unitTurns)
+        {
+            if (unitTurn.Unit.Model.Name == name)
+            {
+                unit = unitTurn.Unit;
+                return true;
+            }
+        }
+
+        unit = null;
+        return false;
     }
 
     private Unit SelectEnemy(UnitTurn[] defenders, bool playerTurn)

@@ -1,5 +1,4 @@
 ﻿using Spectre.Console;
-using System;
 
 public class UnitsPrinter : IPrinter
 {
@@ -14,12 +13,19 @@ public class UnitsPrinter : IPrinter
     private Grid _grid;
 
     private List<Panel> _panels = new List<Panel>();
+    private List<string> _unitNames = new List<string>();
     private int _selectIndex = 0;
+    private Color _lastColor = Color.White;
 
     public void Initialize(LiveDisplayContext context, Layout layout)
     {
         _displayContext = context;
         _layout = layout;
+    }
+
+    public string GetSelectedUnitName()
+    {
+        return _unitNames[_selectIndex];
     }
 
     public void ResetSelect()
@@ -182,7 +188,7 @@ public class UnitsPrinter : IPrinter
         }
         else
         {
-            _panels[_selectIndex].BorderColor(Color.White);
+            _panels[_selectIndex].BorderColor(_lastColor);
         }
         _selectIndex = Math.Clamp(index, 0, _panels.Count - 1);
         if (CheckEmptyCell(_selectIndex))
@@ -191,6 +197,7 @@ public class UnitsPrinter : IPrinter
         }
         else
         {
+            _lastColor = _panels[_selectIndex].BorderStyle.Foreground;
             _panels[_selectIndex].BorderColor(Color.Green);
         }
         _displayContext.Refresh();
@@ -199,6 +206,8 @@ public class UnitsPrinter : IPrinter
     public void Print(UnitsContext context)
     {
         _panels.Clear();
+        _unitNames.Clear();
+
         _grid = new Grid();
 
         for (int i = 0; i < gridColumns; i++)
@@ -209,6 +218,8 @@ public class UnitsPrinter : IPrinter
         Grid[] panels = new Grid[gridsCount];
 
         Dictionary<int, Dictionary<int, string>> indeciesToName = new Dictionary<int, Dictionary<int, string>>();
+        string unitTurnName = "";
+
         for (int i = 0; i < context.UnitsPlacement.Length; i++)
         {
             foreach (var globalIndex in context.UnitsPlacement[i])
@@ -219,6 +230,11 @@ public class UnitsPrinter : IPrinter
                 if (!indeciesToName.ContainsKey(gridIndex))
                 {
                     indeciesToName[gridIndex] = new Dictionary<int, string>();
+                }
+
+                if (context.Units[i].Unit == context.UnitTurn.Unit)
+                {
+                    unitTurnName = context.UnitTurn.Unit.Model.Name;
                 }
 
                 indeciesToName[gridIndex].Add(panelIndex, context.Units[i].Unit.Model.Name);
@@ -238,6 +254,9 @@ public class UnitsPrinter : IPrinter
                 panels[i].AddRow(panel1);
                 panels[i].AddRow(panel2);
 
+                _unitNames.Add("");
+                _unitNames.Add("");
+
                 _panels.Add(panel1);
                 _panels.Add(panel2);
             }
@@ -252,17 +271,22 @@ public class UnitsPrinter : IPrinter
                     {
                         if (indeciesToName[i][0] == indeciesToName[i][1])
                         {
-                            var panel3 = new Panel(indeciesToName[i][0]) { Height = bigPanelHeight, Width = panelWidth }.BorderColor(Color.White);
+                            var panel3 = new Panel(indeciesToName[i][0]) { Height = bigPanelHeight, Width = panelWidth }.BorderColor(indeciesToName[i][0] == unitTurnName ? Color.Cyan : Color.White);
                             panels[i].AddRow(panel3);
+
+                            _unitNames.Add(indeciesToName[i][0]);
                             _panels.Add(panel3);
                         }
                         else
                         {
-                            var panel4 = new Panel(indeciesToName[i][0]) { Height = normalPanelHeight, Width = panelWidth }.BorderColor(Color.White);
-                            var panel5 = new Panel(indeciesToName[i][1]) { Height = normalPanelHeight, Width = panelWidth }.BorderColor(Color.White);
+                            var panel4 = new Panel(indeciesToName[i][0]) { Height = normalPanelHeight, Width = panelWidth }.BorderColor(indeciesToName[i][0] == unitTurnName ? Color.Cyan : Color.White);
+                            var panel5 = new Panel(indeciesToName[i][1]) { Height = normalPanelHeight, Width = panelWidth }.BorderColor(indeciesToName[i][1] == unitTurnName ? Color.Cyan : Color.White);
 
                             panels[i].AddRow(panel4);
                             panels[i].AddRow(panel5);
+
+                            _unitNames.Add(indeciesToName[i][0]);
+                            _unitNames.Add(indeciesToName[i][1]);
 
                             _panels.Add(panel4);
                             _panels.Add(panel5);
@@ -270,11 +294,14 @@ public class UnitsPrinter : IPrinter
                     }
                     else if (!indeciesToName[i].ContainsKey(1))
                     {
-                        var panel6 = new Panel(indeciesToName[i][0]) { Height = normalPanelHeight, Width = panelWidth }.BorderColor(Color.White);
+                        var panel6 = new Panel(indeciesToName[i][0]) { Height = normalPanelHeight, Width = panelWidth }.BorderColor(indeciesToName[i][0] == unitTurnName ? Color.Cyan : Color.White);
                         var panel7 = new Panel("Empty") { Height = normalPanelHeight, Width = panelWidth }.BorderColor(Color.Gray).Header("");
 
                         panels[i].AddRow(panel6);
                         panels[i].AddRow(panel7);
+
+                        _unitNames.Add(indeciesToName[i][0]);
+                        _unitNames.Add("");
 
                         _panels.Add(panel6);
                         _panels.Add(panel7);
@@ -282,10 +309,13 @@ public class UnitsPrinter : IPrinter
                     else
                     {
                         var panel8 = new Panel("Empty") { Height = normalPanelHeight, Width = panelWidth }.BorderColor(Color.Gray).Header("");
-                        var panel9 = new Panel(indeciesToName[i][1]) { Height = normalPanelHeight, Width = panelWidth }.BorderColor(Color.White);
+                        var panel9 = new Panel(indeciesToName[i][1]) { Height = normalPanelHeight, Width = panelWidth }.BorderColor(indeciesToName[i][1] == unitTurnName ? Color.Cyan : Color.White);
 
                         panels[i].AddRow(panel8);
                         panels[i].AddRow(panel9);
+
+                        _unitNames.Add("");
+                        _unitNames.Add(indeciesToName[i][1]);
 
                         _panels.Add(panel8);
                         _panels.Add(panel9);
@@ -298,6 +328,9 @@ public class UnitsPrinter : IPrinter
 
                     panels[i].AddRow(panel10);
                     panels[i].AddRow(panel11);
+
+                    _unitNames.Add("");
+                    _unitNames.Add("");
 
                     _panels.Add(panel10);
                     _panels.Add(panel11);
