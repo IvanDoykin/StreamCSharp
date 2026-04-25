@@ -56,6 +56,11 @@
                     // update stats and equip info
                 }
 
+                if (keyInfo.Key == ConsoleKey.RightArrow)
+                {
+                    _vitalsPrinter.SwiitchPrintMode();
+                }
+
                 if (FindUnitByName(turnCycle, _unitsPrinter.GetSelectedUnitName(), out Unit selectedUnit))
                 {
                     _statsPrinter.Print(new StatsContext(selectedUnit));

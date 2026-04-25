@@ -1,5 +1,12 @@
 ﻿using Spectre.Console;
 
+public enum VitalsPrinterMode
+{
+    Base,
+    Extra,
+    Weapon
+}
+
 public class VitalsPrinter : IPrinter
 {
     private const string _destroyedBodyPartStatus = "УНИЧТОЖЕНО";
@@ -11,6 +18,8 @@ public class VitalsPrinter : IPrinter
 
     private LiveDisplayContext _displayContext;
     private Layout _layout;
+
+    private VitalsPrinterMode _mode = VitalsPrinterMode.Base;
 
     public void Initialize(LiveDisplayContext context, Layout layout)
     {
@@ -26,10 +35,26 @@ public class VitalsPrinter : IPrinter
         _displayContext.Refresh();
     }
 
+    public void SwiitchPrintMode()
+    {
+        if (_mode == VitalsPrinterMode.Base)
+        {
+            _mode = VitalsPrinterMode.Extra;
+        }
+        else if (_mode == VitalsPrinterMode.Extra)
+        {
+            _mode = VitalsPrinterMode.Weapon;
+        }
+        else
+        {
+            _mode = VitalsPrinterMode.Base;
+        }
+    }
+
     public void Print(VitalsContext context)
     {
         var table = new Table().AddColumn("").AddColumn("").Border(TableBorder.None);
-        var panel = new Panel(table).Header("Stats").BorderColor(Color.White).Expand();
+        var panel = new Panel(table).Header("Vitals").BorderColor(Color.White).Expand();
 
         var bodyParts = context.Unit.BodyParts;
         var health = 0;
@@ -53,22 +78,62 @@ public class VitalsPrinter : IPrinter
         table.AddRow($"= = = = =", "= = = = = = = = = = = = = = =");
         table.AddEmptyRow();
 
-        table.AddRow("[darkorange]Меч благодати[/]", "Атака: 9999, Защита: 9999");
-        table.AddEmptyRow();
-        table.AddRow($"[cyan]Щит безумия[/]", "Атака: 5000, Защита: -700");
-        table.AddEmptyRow();
-        table.AddRow($"[gray]Перчатки[/]", "Атака: 1, Защита: 1");
-        table.AddEmptyRow();
-        table.AddRow($"4", "345346346346");
-        table.AddEmptyRow();
-        table.AddRow($"5", "345346346346");
-        table.AddEmptyRow();
-        table.AddRow($"6", "345346346346");
-        table.AddEmptyRow();
-        table.AddRow($"7", "345346346346");
-        table.AddEmptyRow();
-        table.AddRow($"8", "345346346346");
-        table.AddEmptyRow();
+        foreach (var bodyPart in bodyParts.Values)
+        {
+            if (bodyPart is Arm arm)
+            {
+                if (arm.HasWeapon)
+                {
+                    if (_mode == VitalsPrinterMode.Base)
+                    {
+                        table.AddRow(arm.Weapon.Name + ':', $"Атака: {arm.Weapon.Attack}, Защита: {arm.Weapon.Defense}");
+                    }
+                    else if (_mode == VitalsPrinterMode.Extra)
+                    {
+                        table.AddRow(arm.Weapon.Name + ':', $"Скорость: {arm.Weapon.Speed}, Инициатива: {arm.Weapon.Initiative}");
+                    }
+                    else
+                    {
+                        table.AddRow(arm.Weapon.Name + ':', $"Базовый урон: {arm.Weapon.BaseDamage}");
+                    }
+                    table.AddEmptyRow();
+                }
+            }
+        }
+
+        foreach (var bodyPart in bodyParts.Values)
+        {
+            if (bodyPart.HasArmor)
+            {
+                if (_mode == VitalsPrinterMode.Base)
+                {
+                    table.AddRow(bodyPart.Armor.Name + ':', $"Атака: {bodyPart.Armor.Attack}, Защита: {bodyPart.Armor.Defense}");
+                }
+                else
+                {
+                    table.AddRow(bodyPart.Armor.Name + ':', $"Скорость: {bodyPart.Armor.Speed}, Инициатива: {bodyPart.Armor.Initiative}");
+                }
+
+                table.AddEmptyRow();
+            }
+        }
+
+        //table.AddRow("[darkorange]Меч благодати[/]", "Атака: 9999, Защита: 9999");
+        //table.AddEmptyRow();
+        //table.AddRow($"[cyan]Щит безумия[/]", "Атака: 5000, Защита: -700");
+        //table.AddEmptyRow();
+        //table.AddRow($"[gray]Перчатки[/]", "Атака: 1, Защита: 1");
+        //table.AddEmptyRow();
+        //table.AddRow($"4", "345346346346");
+        //table.AddEmptyRow();
+        //table.AddRow($"5", "345346346346");
+        //table.AddEmptyRow();
+        //table.AddRow($"6", "345346346346");
+        //table.AddEmptyRow();
+        //table.AddRow($"7", "345346346346");
+        //table.AddEmptyRow();
+        //table.AddRow($"8", "345346346346");
+        //table.AddEmptyRow();
 
         // 23 +-
 
@@ -78,7 +143,7 @@ public class VitalsPrinter : IPrinter
 
     private string GetHealthBar(int health, int maxHealth)
     {
-        int barLength = 10;
+        int barLength = 8;
         int filled = (int)Math.Round((double)health / maxHealth * barLength);
         filled = Math.Max(0, Math.Min(filled, barLength));
 
