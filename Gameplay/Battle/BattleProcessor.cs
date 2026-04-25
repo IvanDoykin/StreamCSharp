@@ -31,50 +31,74 @@
                 _vitalsPrinter.Print(new VitalsContext(firstTurnUnit));
             }
 
-            do
+            bool successfulSelect = false;
+            while (!successfulSelect)
             {
-                keyInfo = Console.ReadKey(true);
+                do
+                {
+                    keyInfo = Console.ReadKey(true);
 
-                if (keyInfo.Key == ConsoleKey.D)
-                {
-                    _unitsPrinter.SelectRight();
-                    // update stats and equip info
-                }
-                if (keyInfo.Key == ConsoleKey.A)
-                {
-                    _unitsPrinter.SelectLeft();
-                    // update stats and equip info
-                }
-                if (keyInfo.Key == ConsoleKey.W)
-                {
-                    _unitsPrinter.SelectUp();
-                    // update stats and equip info
-                }
-                if (keyInfo.Key == ConsoleKey.S)
-                {
-                    _unitsPrinter.SelectDown();
-                    // update stats and equip info
-                }
+                    if (keyInfo.Key == ConsoleKey.D)
+                    {
+                        _unitsPrinter.SelectRight();
+                        // update stats and equip info
+                    }
+                    if (keyInfo.Key == ConsoleKey.A)
+                    {
+                        _unitsPrinter.SelectLeft();
+                        // update stats and equip info
+                    }
+                    if (keyInfo.Key == ConsoleKey.W)
+                    {
+                        _unitsPrinter.SelectUp();
+                        // update stats and equip info
+                    }
+                    if (keyInfo.Key == ConsoleKey.S)
+                    {
+                        _unitsPrinter.SelectDown();
+                        // update stats and equip info
+                    }
+                    if (keyInfo.Key == ConsoleKey.RightArrow)
+                    {
+                        _vitalsPrinter.SwiitchPrintMode();
+                    }
 
-                if (keyInfo.Key == ConsoleKey.RightArrow)
-                {
-                    _vitalsPrinter.SwiitchPrintMode();
-                }
+                    if (FindUnitByName(turnCycle, _unitsPrinter.GetSelectedUnitName(), out Unit unit))
+                    {
+                        _statsPrinter.Print(new StatsContext(unit));
+                        _vitalsPrinter.Print(new VitalsContext(unit));
+                    }
+                    else
+                    {
+                        _statsPrinter.Reset();
+                        _vitalsPrinter.Reset();
+                    }
+
+                } while (keyInfo.Key != ConsoleKey.Enter);
 
                 if (FindUnitByName(turnCycle, _unitsPrinter.GetSelectedUnitName(), out Unit selectedUnit))
                 {
-                    _statsPrinter.Print(new StatsContext(selectedUnit));
-                    _vitalsPrinter.Print(new VitalsContext(selectedUnit));
+                    if (selectedUnit == attackerTurn.Unit)
+                    {
+                        _gameplayLogPrinter.Print(new LogContext("Пока что юнит не может выбирать сам себя :(", ConsoleColor.Red));
+                    }
+                    else
+                    {
+                        new AttackCommand(_gameplayLogPrinter, attackerTurn.Unit, selectedUnit, BodyPartName.Head, UnitUtility.GetFlatDamage(attackerTurn.Unit.BaseDamage, attackerTurn.Unit, selectedUnit), 0).Execute();
+                        successfulSelect = true;
+                    }
                 }
                 else
                 {
-                    _statsPrinter.Reset();
-                    _vitalsPrinter.Reset();
+                    _gameplayLogPrinter.Print(new LogContext("Нужно выбрать юнита для взаимодействия с ним.", ConsoleColor.Red));
                 }
-
-            } while (keyInfo.Key != ConsoleKey.Enter);
-
+            }
             // Get Select Index and select unit
+        }
+
+        else
+        {
+            new AttackCommand(_gameplayLogPrinter, attackerTurn.Unit, allies.First(unit => unit.Unit.IsAlive).Unit, BodyPartName.Head, UnitUtility.GetFlatDamage(attackerTurn.Unit.BaseDamage, attackerTurn.Unit, allies.First(unit => unit.Unit.IsAlive).Unit), 90).Execute();
         }
 
 
@@ -91,14 +115,14 @@
         //BodyPartName bodyPart = SelectBodyPart(attackerTurn.IsAlly);
         //int attackIndex = SelectAttack(attackerTurn.Unit, enemy, bodyPart, attackerTurn.IsAlly);
 
-        //for (int i = 0; i < turnCycle.Length; i++)
-        //{
-        //    if (turnCycle[i].Order == attackerTurn.Order)
-        //    {
-        //        turnCycle[i] = new UnitTurn(attackerTurn.Unit, attackerTurn.IsAlly, false, i);
-        //        break;
-        //    }
-        //}
+        for (int i = 0; i < turnCycle.Length; i++)
+        {
+            if (turnCycle[i].Order == attackerTurn.Order)
+            {
+                turnCycle[i] = new UnitTurn(attackerTurn.Unit, attackerTurn.IsAlly, false, i);
+                break;
+            }
+        }
 
         onComplete();
     }

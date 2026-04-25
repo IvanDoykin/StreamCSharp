@@ -346,6 +346,8 @@ public class UnitsPrinter : IPrinter
         var panel = new Panel(_grid).Header("Units").Expand();
         _layout["Battle"]["Turn"]["Units"].Update(panel);
         _displayContext.Refresh();
+
+        _lastColor = _panels[_selectIndex].BorderStyle.Foreground;
     }
 
     private int GetGridIndex(int index, bool isAlly)
