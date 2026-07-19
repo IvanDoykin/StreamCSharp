@@ -5,10 +5,11 @@ public class SkipSkill : ISkill, ISelfSkill
     public string Name => _name;
     public string Description => _description;
 
-    public Unit Origin => throw new NotImplementedException();
+    public Unit Origin => _origin;
 
-    public IReadOnlyList<Unit> Targets => throw new NotImplementedException();
+    public IReadOnlyList<Unit> Targets => new List<Unit>();
 
+    private Unit _origin;
     private SkillMenu _menu;
     private string _name;
     private string _description;
@@ -21,6 +22,7 @@ public class SkipSkill : ISkill, ISelfSkill
 
     public void Initialize(SkillMenu menu, Unit origin, IEnumerable<Unit> targets)
     {
+        _origin = origin;
         _menu = menu;
     }
 

@@ -1,4 +1,6 @@
-﻿public static class SaveLoad<T> where T : class
+﻿using System.IO;
+
+public static class SaveLoad<T> where T : class
 {
     private static readonly Dictionary<Type, string> typeToDirectory = new Dictionary<Type, string>()
     {
@@ -7,7 +9,8 @@
         {typeof(IArmor), Path.Combine("Content", "Equipment", "Armor") },
         {typeof(IWeapon), Path.Combine("Content", "Equipment", "Weapon") },
         {typeof(ArenaModel), Path.Combine("Content", "Levels") },
-        {typeof(ISkill), Path.Combine("Content", "Skills") }
+        {typeof(ISkill), Path.Combine("Content", "Skills") },
+        {typeof(PlayerSave), Path.Combine("Saves") }
     };
 
     public static T Load(string name)
@@ -24,7 +27,45 @@
         }
     }
 
+    public static bool CheckOnExist(T saveable, string name)
+    {
+        if (TryGetDirectory(out string directory))
+        {
+            if (File.Exists(Path.Combine(directory, name + ".json")))
+            {
+                return true;
+            }
+
+            return false;
+        }
+        else
+        {
+            Logger.LogError($"Save error {typeof(T).Name} ({name})");
+        }
+
+        return false;
+    }
+
     public static void Save(T saveable, string name)
+    {
+        if (TryGetDirectory(out string directory))
+        {
+            if (File.Exists(Path.Combine(directory, name + ".json")))
+            {
+                Logger.Log($"File by path {Path.Combine(directory, name + ".json")} already exist");
+                return;
+            }
+
+            var json = JsonIO<T>.Save(saveable);
+            FileIO.Save(Path.Combine(directory), name + ".json", json);
+        }
+        else
+        {
+            Logger.LogError($"Save error {typeof(T).Name} ({name})");
+        }
+    }
+
+    public static void SaveOrReplace(T saveable, string name)
     {
         if (TryGetDirectory(out string directory))
         {

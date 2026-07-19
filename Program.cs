@@ -8,79 +8,56 @@
             WindowSettings.Initialize();
             Logger.enabled = true;
 
-            //var goldenSword = new Sword("Golden sword", 0, 10, 200);
-            //var commonSword = new Sword("Common sword", 0, 5, 100);
+            //var startup = new StartupScene();
+            //await startup.Play();
 
-            //var glove = new Glove("Glove", 10, 0);
-            //var greave = new Greave("Greave", 20, 5);
-            //var helmet = new Helmet("Helmet", 0, 10);
-            //var vest = new Vest("Vest", 100, 0);
-
-            //SaveLoad<IWeapon>.Save(goldenSword, goldenSword.Name);
-            //SaveLoad<IWeapon>.Save(commonSword, commonSword.Name);
-
-            //SaveLoad<IArmor>.Save(glove, glove.Name);
-            //SaveLoad<IArmor>.Save(greave, greave.Name);
-            //SaveLoad<IArmor>.Save(helmet, helmet.Name);
-            //SaveLoad<IArmor>.Save(vest, vest.Name);
-
-            //var unit1 = new Unit(SaveLoad<UnitModel>.Load("Timur"));
-            //EquipUtility.EquipUnit(unit1, goldenSword, BodyPartName.RightArm);
-            //EquipUtility.EquipUnit(unit1, vest, BodyPartName.Body);
-            //EquipUtility.EquipUnit(unit1, helmet, BodyPartName.Head);
-            //EquipUtility.EquipUnit(unit1, glove, BodyPartName.RightArm);
-            //var unitSave1 = new UnitSave(unit1);
-            //SaveLoad<UnitSave>.Save(unitSave1, "Player");
-
-            //var unit2 = new Unit(SaveLoad<UnitModel>.Load("Gregory"));
-            //EquipUtility.EquipUnit(unit2, commonSword, BodyPartName.RightArm);
-            //EquipUtility.EquipUnit(unit2, commonSword, BodyPartName.LeftArm);
-            //var unitSave2 = new UnitSave(unit2);
-            //SaveLoad<UnitSave>.Save(unitSave2, "Gregory");
-
-            //var unit3 = new Unit(SaveLoad<UnitModel>.Load("Michael"));
-            //EquipUtility.EquipUnit(unit3, commonSword, BodyPartName.RightArm);
-            //EquipUtility.EquipUnit(unit3, commonSword, BodyPartName.LeftArm);
-            //var unitSave3 = new UnitSave(unit3);
-            //SaveLoad<UnitSave>.Save(unitSave3, "Michael");
-
-            //var playerUnits = new List<Unit>();
-            //var enemyUnits = new List<Unit>();
-            //playerUnits.Add(UnitUtility.CreateUnit(SaveLoad<UnitSave>.Load("Player")));
-            //enemyUnits.Add(UnitUtility.CreateUnit(SaveLoad<UnitSave>.Load("Gregory")));
-            //enemyUnits.Add(UnitUtility.CreateUnit(SaveLoad<UnitSave>.Load("Michael")));
-
-            //ArenaModel model = new ArenaModel(playerUnits.Select(x => x.Model.Name).ToList(), enemyUnits.Select(x => x.Model.Name).ToList());
-            //SaveLoad<ArenaModel>.Save(model, "Title");
-
-            //Arena arena = new Arena(SaveLoad<ArenaModel>.Load("Title"));
-            //arena.Start();
-
-            //IConsoleRenderer renderer = new BufferedConsoleRenderer();
-            //renderer.SetSize(160, 100);
-            //DrawUtils draw = new DrawUtils(renderer.Buffer);
-            //draw.ResetColor();
-
-            GameplayLogPrinter gameplayLogPrinter = new GameplayLogPrinter();
-            UnitsPrinter unitsPrinter = new UnitsPrinter();
-            StatsPrinter statsPrinter = new StatsPrinter();
-            VitalsPrinter vitalsPrinter = new VitalsPrinter();
-            SkillsPrinter skillsPrinter = new SkillsPrinter();
-            TurnPrinter turnPrinter = new TurnPrinter();
-            SkillMenu skillMenu = new SkillMenu();
-
-            Task.Run(() =>
+            var menu = new MainMenu();
+            if (menu.GetSelectedIndex() == 0)
             {
-                Thread.Sleep(1500);
-                Arena arena = new Arena(gameplayLogPrinter, unitsPrinter, statsPrinter, vitalsPrinter, turnPrinter, skillsPrinter, SaveLoad<ArenaModel>.Load("Title"), skillMenu);
-                arena.Start();
+                Console.Write("Введите название сохранения: ");
 
-                LevelHasFinished?.Invoke(arena.State);
-            });
+                string name = "";
+                PlayerSave playerSave = new PlayerSave("");
+                do
+                {
+                    name = Console.ReadLine();
+                    playerSave = new PlayerSave(name);
 
-            GameRender render = new GameRender(gameplayLogPrinter, unitsPrinter, statsPrinter, vitalsPrinter, skillsPrinter, turnPrinter, skillMenu);
+                    if (SaveLoad<PlayerSave>.CheckOnExist(playerSave, name))
+                    {
+                        Console.Write($"Сохранение {name} уже существует. Введите другое название: ");
+                    }
+                } while (SaveLoad<PlayerSave>.CheckOnExist(playerSave, name));
 
-            Console.WriteLine("Loading...");
+                SaveLoad<PlayerSave>.Save(playerSave, name);
+            }
+            if (menu.GetSelectedIndex() == 1)
+            {
+                
+            }
+            if (menu.GetSelectedIndex() == 2)
+            {
+                return;
+            }
+
+            //GameplayLogPrinter gameplayLogPrinter = new GameplayLogPrinter();
+            //UnitsPrinter unitsPrinter = new UnitsPrinter();
+            //StatsPrinter statsPrinter = new StatsPrinter();
+            //VitalsPrinter vitalsPrinter = new VitalsPrinter();
+            //SkillsPrinter skillsPrinter = new SkillsPrinter();
+            //TurnPrinter turnPrinter = new TurnPrinter();
+            //SkillMenu skillMenu = new SkillMenu();
+
+            //Task.Run(() =>
+            //{
+            //    Thread.Sleep(1500);
+            //    Arena arena = new Arena(gameplayLogPrinter, unitsPrinter, statsPrinter, vitalsPrinter, turnPrinter, skillsPrinter, SaveLoad<ArenaModel>.Load("Title"), skillMenu);
+            //    arena.Start();
+
+            //    LevelHasFinished?.Invoke(arena.State);
+            //});
+
+            //GameplayRender render = new GameplayRender(gameplayLogPrinter, unitsPrinter, statsPrinter, vitalsPrinter, skillsPrinter, turnPrinter, skillMenu);
         }
         catch (Exception ex)
         {

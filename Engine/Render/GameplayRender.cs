@@ -1,6 +1,6 @@
 ﻿using Spectre.Console;
 
-public class GameRender
+public class GameplayRender
 {
     private GameplayLogPrinter _gameplayLogPrinter;
     private UnitsPrinter _unitsPrinter;
@@ -13,7 +13,7 @@ public class GameRender
     private Layout _layout;
     private bool _destroy = false;
 
-    public GameRender(GameplayLogPrinter gameplayLogPrinter, UnitsPrinter unitsPrinter, StatsPrinter statsPrinter, VitalsPrinter vitalsPrinter, SkillsPrinter skillsPrinter, TurnPrinter turnPrinter, SkillMenu skillMenu)
+    public GameplayRender(GameplayLogPrinter gameplayLogPrinter, UnitsPrinter unitsPrinter, StatsPrinter statsPrinter, VitalsPrinter vitalsPrinter, SkillsPrinter skillsPrinter, TurnPrinter turnPrinter, SkillMenu skillMenu)
     {
         _gameplayLogPrinter = gameplayLogPrinter;
         _unitsPrinter = unitsPrinter;
