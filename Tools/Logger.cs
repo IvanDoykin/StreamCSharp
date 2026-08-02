@@ -11,7 +11,7 @@
 
         ConsoleColor oldColor = Console.ForegroundColor;
 
-        Console.ForegroundColor = ConsoleColor.White;
+        Console.ForegroundColor = ConsoleColor.Gray;
         Console.WriteLine($"[LOG]({DateTime.Now}): {message}");
         Console.ForegroundColor = oldColor;
     }

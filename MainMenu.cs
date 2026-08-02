@@ -54,7 +54,7 @@ public class MainMenu
 
     private void Reset()
     {
-        _emptyPanel = new Panel("").Header("").BorderColor(Color.Black).Expand();
+        _emptyPanel = new Panel("").Header("").NoBorder().Expand();
         _layout["Empty1"].Update(_emptyPanel);
         _layout["Empty2"].Update(_emptyPanel);
         _layout["MenuColumn"]["Empty3"].Update(_emptyPanel);

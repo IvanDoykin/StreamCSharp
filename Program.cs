@@ -1,4 +1,6 @@
-﻿internal class Program
+﻿using System.Security.Principal;
+
+internal class Program
 {
     public static Action<BattleState> LevelHasFinished;
     private static async Task Main()
@@ -11,34 +13,67 @@
             //var startup = new StartupScene();
             //await startup.Play();
 
-            var menu = new MainMenu();
-            if (menu.GetSelectedIndex() == 0)
+            bool isMenuConfirmed = false;
+            do
             {
-                Console.Write("Введите название сохранения: ");
-
-                string name = "";
-                PlayerSave playerSave = new PlayerSave("");
-                do
+                var menu = new MainMenu();
+                if (menu.GetSelectedIndex() == 0)
                 {
-                    name = Console.ReadLine();
-                    playerSave = new PlayerSave(name);
+                    Console.Write("Введите название сохранения (или q, чтобы выйти): ");
 
-                    if (SaveLoad<PlayerSave>.CheckOnExist(playerSave, name))
+                    string name = "";
+                    PlayerSave playerSave = new PlayerSave("");
+                    do
                     {
-                        Console.Write($"Сохранение {name} уже существует. Введите другое название: ");
-                    }
-                } while (SaveLoad<PlayerSave>.CheckOnExist(playerSave, name));
+                        name = Console.ReadLine();
+                        if (name == "q")
+                        {
+                            isMenuConfirmed = false;
+                            break;
+                        }
+                        playerSave = new PlayerSave(name);
 
-                SaveLoad<PlayerSave>.Save(playerSave, name);
+                        if (name.Length < 3)
+                        {
+                            Console.Write($"Введите название с 3 символами или больше (или q, чтобы выйти): ");
+                            continue;
+                        }
+
+                        if (SaveLoad<PlayerSave>.CheckOnExist(playerSave, name))
+                        {
+                            Console.Write($"Сохранение {name} уже существует. Введите другое название (или q, чтобы выйти): ");
+                        }
+                        else
+                        {
+                            isMenuConfirmed = true;
+                        }
+                    } while (SaveLoad<PlayerSave>.CheckOnExist(playerSave, name) || name.Length < 3);
+
+                    if (isMenuConfirmed)
+                    {
+                        SaveLoad<PlayerSave>.Save(playerSave, name);
+                    }
+                }
+                if (menu.GetSelectedIndex() == 1)
+                {
+                    Console.WriteLine();
+                    LoadMenu loadMenu = new LoadMenu(SaveLoad<PlayerSave>.GetAllSaves());
+
+                    isMenuConfirmed = false;
+                    if (loadMenu.TryGetSelectedLoad(out string saveName))
+                    {
+                        Console.WriteLine($"Сохранение {saveName} готовится к загрузке!");
+                        isMenuConfirmed = true;
+                    }
+                }
+                if (menu.GetSelectedIndex() == 2)
+                {
+                    isMenuConfirmed = true;
+                    return;
+                }
+
             }
-            if (menu.GetSelectedIndex() == 1)
-            {
-                
-            }
-            if (menu.GetSelectedIndex() == 2)
-            {
-                return;
-            }
+            while (!isMenuConfirmed);
 
             //GameplayLogPrinter gameplayLogPrinter = new GameplayLogPrinter();
             //UnitsPrinter unitsPrinter = new UnitsPrinter();

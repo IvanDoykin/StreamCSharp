@@ -27,6 +27,15 @@ public static class SaveLoad<T> where T : class
         }
     }
 
+    public static string[] GetAllSaves()
+    {
+        string savesPath = typeToDirectory[typeof(T)];
+        string[] saves = Directory.GetFiles(savesPath);
+        saves = saves.Select(path => path.Replace(typeToDirectory[typeof(T)], "").Replace("\\", "").Replace("/", "").Replace(".json", "")).ToArray();
+
+        return saves;
+    }
+
     public static bool CheckOnExist(T saveable, string name)
     {
         if (TryGetDirectory(out string directory))
