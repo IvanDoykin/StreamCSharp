@@ -1,6 +1,6 @@
 ﻿using Spectre.Console;
 
-public class StartupScene
+public class StartupScene : IScene
 {
     private const int C4 = 262;
     private const int D4 = 294;

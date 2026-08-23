@@ -13,7 +13,7 @@ public class GameplayRender
     private Layout _layout;
     private bool _destroy = false;
 
-    public GameplayRender(GameplayLogPrinter gameplayLogPrinter, UnitsPrinter unitsPrinter, StatsPrinter statsPrinter, VitalsPrinter vitalsPrinter, SkillsPrinter skillsPrinter, TurnPrinter turnPrinter, SkillMenu skillMenu)
+    public GameplayRender(GameplayScene scene, GameplayLogPrinter gameplayLogPrinter, UnitsPrinter unitsPrinter, StatsPrinter statsPrinter, VitalsPrinter vitalsPrinter, SkillsPrinter skillsPrinter, TurnPrinter turnPrinter, SkillMenu skillMenu)
     {
         _gameplayLogPrinter = gameplayLogPrinter;
         _unitsPrinter = unitsPrinter;
@@ -23,7 +23,7 @@ public class GameplayRender
         _turnPrinter = turnPrinter;
         _skillMenu = skillMenu;
 
-        Program.LevelHasFinished += StopRender;
+        scene.LevelHasFinished += StopRender;
 
         InitializeLayout();
         StartRender();

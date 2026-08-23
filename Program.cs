@@ -2,7 +2,7 @@
 
 internal class Program
 {
-    public static Action<BattleState> LevelHasFinished;
+    public static IScene Scene;
     private static async Task Main()
     {
         try
@@ -52,6 +52,8 @@ internal class Program
                     if (isMenuConfirmed)
                     {
                         SaveLoad<PlayerSave>.Save(playerSave, name);
+                        Scene = new NewGameScene(playerSave);
+                        Scene = new HubScene(playerSave);
                     }
                 }
                 if (menu.GetSelectedIndex() == 1)
@@ -64,6 +66,7 @@ internal class Program
                     {
                         Console.WriteLine($"Сохранение {saveName} готовится к загрузке!");
                         isMenuConfirmed = true;
+                        Scene = new HubScene(SaveLoad<PlayerSave>.Load(saveName));
                     }
                 }
                 if (menu.GetSelectedIndex() == 2)
@@ -74,25 +77,6 @@ internal class Program
 
             }
             while (!isMenuConfirmed);
-
-            //GameplayLogPrinter gameplayLogPrinter = new GameplayLogPrinter();
-            //UnitsPrinter unitsPrinter = new UnitsPrinter();
-            //StatsPrinter statsPrinter = new StatsPrinter();
-            //VitalsPrinter vitalsPrinter = new VitalsPrinter();
-            //SkillsPrinter skillsPrinter = new SkillsPrinter();
-            //TurnPrinter turnPrinter = new TurnPrinter();
-            //SkillMenu skillMenu = new SkillMenu();
-
-            //Task.Run(() =>
-            //{
-            //    Thread.Sleep(1500);
-            //    Arena arena = new Arena(gameplayLogPrinter, unitsPrinter, statsPrinter, vitalsPrinter, turnPrinter, skillsPrinter, SaveLoad<ArenaModel>.Load("Title"), skillMenu);
-            //    arena.Start();
-
-            //    LevelHasFinished?.Invoke(arena.State);
-            //});
-
-            //GameplayRender render = new GameplayRender(gameplayLogPrinter, unitsPrinter, statsPrinter, vitalsPrinter, skillsPrinter, turnPrinter, skillMenu);
         }
         catch (Exception ex)
         {

@@ -71,7 +71,7 @@ public class LoadMenu
 
     private void SelectUp()
     {
-        if (_isCrossSelected)
+        if (_saveNames.Length == 0 || _isCrossSelected)
         {
             return;
         }
@@ -88,7 +88,7 @@ public class LoadMenu
 
     private void SelectDown()
     {
-        if (_isCrossSelected)
+        if (_saveNames.Length == 0 || _isCrossSelected)
         {
             return;
         }
@@ -124,6 +124,11 @@ public class LoadMenu
         _layout["MenuColumn"]["Empty4"].Update(_emptyPanel);
 
         Panel crossPanel = new Panel("X");
+        if (_saveNames.Length == 0)
+        {
+            _isCrossSelected = true;
+        }
+
         if (_isCrossSelected)
         {
             crossPanel.BorderColor(Color.Green);
@@ -134,23 +139,35 @@ public class LoadMenu
         }
 
         _layout["MenuColumn"]["MenuRoot"]["Misc"]["Cross"].Update(crossPanel);
-        _layout["MenuColumn"]["MenuRoot"]["Misc"]["Scrollbar"].Update(new Panel($"{_selectedIndex + 1} / {_saveNames.Length}") { Width = 14}.NoBorder());
 
-        _menuTable = new Table().Expand().BorderColor(Color.Black);
-        _menuTable.AddColumn("");
-        for (int i = _lowerBorder; i <= _upperBorder; i++)
+        if (_saveNames.Length > 0)
         {
-            if (i == _selectedIndex && !_isCrossSelected)
+            _layout["MenuColumn"]["MenuRoot"]["Misc"]["Scrollbar"].Update(new Panel($"{_selectedIndex + 1} / {_saveNames.Length}") { Width = 14 }.NoBorder());
+
+            _menuTable = new Table().Expand().BorderColor(Color.Black);
+            _menuTable.AddColumn("");
+            for (int i = _lowerBorder; i <= _upperBorder; i++)
             {
-                _menuTable.AddRow(new Panel(_saveNames[i]) { Width = 40, BorderStyle = Color.Green });
+                if (i == _selectedIndex && !_isCrossSelected)
+                {
+                    _menuTable.AddRow(new Panel(_saveNames[i]) { Width = 40, BorderStyle = Color.Green });
+                }
+                else
+                {
+                    _menuTable.AddRow(new Panel(_saveNames[i]) { Width = 40, BorderStyle = Color.White });
+                }
             }
-            else
-            {
-                _menuTable.AddRow(new Panel(_saveNames[i]) { Width = 40, BorderStyle = Color.White });
-            }
+            _menuPanel = new Panel(_menuTable).Header("My Saves").Expand();
+            _layout["MenuColumn"]["MenuRoot"]["Menu"].Update(_menuPanel);
         }
-        _menuPanel = new Panel(_menuTable).Header("My Saves").Expand();
-        _layout["MenuColumn"]["MenuRoot"]["Menu"].Update(_menuPanel);
+
+        else
+        {
+            _layout["MenuColumn"]["MenuRoot"]["Misc"]["Scrollbar"].Update(new Panel($"_") { Width = 14 }.NoBorder());
+            _menuPanel = new Panel("\n\n\n\n\n\n                No saves.").Header("My Saves").Expand();
+            _layout["MenuColumn"]["MenuRoot"]["Menu"].Update(_menuPanel);
+        }
+
     }
 
     private void Start()
