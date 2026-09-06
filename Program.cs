@@ -5,6 +5,17 @@ internal class Program
     public static IScene Scene;
     private static async Task Main()
     {
+        var save = new LocationSave(" _                     _ _       _                 \n| |                   | (_)     (_)                \n| |     ___  _ __   __| |_ _ __  _ _   _ _ __ ___  \n| |    / _ \\| '_ \\ / _` | | '_ \\| | | | | '_ ` _ \\ \n| |___| (_) | | | | (_| | | | | | | |_| | | | | | |\n\\_____/\\___/|_| |_|\\__,_|_|_| |_|_|\\__,_|_| |_| |_|", @" _ __     ___         
+| |\ \   / / |    ___ 
+| | \ \ / /| |   / __|
+| |__\ V / | |___\__ \
+|_____\_/_ |_____|___/
+/ |     / |/ _ \      
+| |_____| | | | |     
+| |_____| | |_| |     
+|_|     |_|\___/      ");
+        SaveLoad<LocationSave>.SaveOrReplace(save, "Londinium");
+
         try
         {
             WindowSettings.Initialize();

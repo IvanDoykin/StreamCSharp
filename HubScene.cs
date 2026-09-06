@@ -37,9 +37,9 @@ public class HubScene : IScene
                SplitRows(
                    new Layout("About").Ratio(3)
                    .SplitRows(
-                       new Layout("Title").Ratio(1),
+                       new Layout("Title").Ratio(8),
                        new Layout("Empty2").Ratio(1),
-                       new Layout("Description").Ratio(8)
+                       new Layout("Description").Ratio(15)
                        ),
                    new Layout("SaveExit").Ratio(2)
                    .SplitRows(
@@ -48,6 +48,13 @@ public class HubScene : IScene
                        )
                    )
            );
+
+        var location = SaveLoad<LocationSave>.Load("Londinium");
+
+        _layout["Root"]["Misc"]["Title"].Update(new Panel(location.Name).Expand());
+        _layout["Root"]["Misc"]["Description"].Update(new Panel(location.Description).Expand());
+        _layout["Root"]["Empty1"].Update(new Panel("").NoBorder());
+        _layout["Root"]["Misc"]["About"]["Empty2"].Update(new Panel("").NoBorder());
     }
 
     private void Stop()

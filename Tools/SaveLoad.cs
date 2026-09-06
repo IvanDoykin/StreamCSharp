@@ -4,13 +4,18 @@ public static class SaveLoad<T> where T : class
 {
     private static readonly Dictionary<Type, string> typeToDirectory = new Dictionary<Type, string>()
     {
+        {typeof(PlayerSave), Path.Combine("Saves") },
+
         {typeof(UnitSave), Path.Combine("Content", "Unit") },
         {typeof(UnitModel), Path.Combine("Content", "Unit", "Model") },
+
         {typeof(IArmor), Path.Combine("Content", "Equipment", "Armor") },
         {typeof(IWeapon), Path.Combine("Content", "Equipment", "Weapon") },
+
         {typeof(ArenaModel), Path.Combine("Content", "Levels") },
         {typeof(ISkill), Path.Combine("Content", "Skills") },
-        {typeof(PlayerSave), Path.Combine("Saves") }
+
+        {typeof(LocationSave), Path.Combine("Content", "Locations") }
     };
 
     public static T Load(string name)
