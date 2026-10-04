@@ -1,6 +1,4 @@
-﻿using Spectre.Console;
-
-public class Button
+﻿public class Button
 {
     private bool _isSelected;
     public bool IsSelected => _isSelected;

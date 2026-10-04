@@ -6,7 +6,7 @@
     public HubScene(PlayerSave save)
     {
         _save = save;
-        _menu = new HubMenu();
+        _menu = new HubMenu(save);
         _menu.Start();
     }
 }

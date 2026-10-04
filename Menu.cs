@@ -19,8 +19,6 @@ public abstract class Menu
             {
                 OnUpdate();
             }
-
-            OnAfterStop();
         });
         AnsiConsole.Live(_layout)
             .Start(ctx =>
@@ -28,6 +26,8 @@ public abstract class Menu
                 ctx.Refresh();
                 while (!_destroyed) Thread.Sleep(1);
             });
+
+        OnAfterStop();
     }
 
     public void Stop()

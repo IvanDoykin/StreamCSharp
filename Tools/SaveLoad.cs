@@ -15,7 +15,8 @@ public static class SaveLoad<T> where T : class
         {typeof(ArenaModel), Path.Combine("Content", "Levels") },
         {typeof(ISkill), Path.Combine("Content", "Skills") },
 
-        {typeof(LocationSave), Path.Combine("Content", "Locations") }
+        {typeof(LocationSave), Path.Combine("Content", "Locations") },
+        {typeof(RichText), Path.Combine("Content", "RichTexts") }
     };
 
     public static T Load(string name)
