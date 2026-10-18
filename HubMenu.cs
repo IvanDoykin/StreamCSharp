@@ -5,7 +5,9 @@ public class HubMenu : Menu
     private PlayerSave _save;
     private Button[] _buttons;
     private Panel[] _buttonVisual;
-    private int _selectedIndex = 0;
+    private Layout[] _buttonLayouts;
+    private int _selectedIndex = -1;
+    private int _previousIndex = -1;
 
     public HubMenu(PlayerSave save)
     {
@@ -18,6 +20,7 @@ public class HubMenu : Menu
 
         _buttons = new Button[7];
         _buttonVisual = new Panel[7];
+        _buttonLayouts = new Layout[7];
     }
 
     protected override void InitializeLayout()
@@ -57,33 +60,40 @@ public class HubMenu : Menu
 
         var location = SaveLoad<LocationSave>.Load("Londinium");
 
-        _buttons[0] = new Button(() => throw new Exception("fight"));
+        _buttons[0] = new Button(Fight);
         _buttonVisual[0] = new Panel(SaveLoad<RichText>.Load("hub_fight").Content).Expand();
-        _layout["Root"]["Gameplay"]["General"]["Fight"].Update(_buttonVisual[0]);
+        _buttonLayouts[0] = _layout["Root"]["Gameplay"]["General"]["Fight"];
+        _buttonLayouts[0].Update(_buttonVisual[0]);
 
         _buttons[1] = new Button(() => throw new Exception("shop"));
         _buttonVisual[1] = new Panel(SaveLoad<RichText>.Load("hub_shop").Content).Expand();
-        _layout["Root"]["Gameplay"]["General"]["Shop"].Update(_buttonVisual[1]);
+        _buttonLayouts[1] = _layout["Root"]["Gameplay"]["General"]["Shop"];
+        _buttonLayouts[1].Update(_buttonVisual[1]);
 
         _buttons[2] = new Button(Exit);
         _buttonVisual[2] = new Panel(SaveLoad<RichText>.Load("hub_inventory").Content).Expand();
-        _layout["Root"]["Gameplay"]["Management"]["Inventory"].Update(_buttonVisual[2]);
+        _buttonLayouts[2] = _layout["Root"]["Gameplay"]["Management"]["Inventory"];
+        _buttonLayouts[2].Update(_buttonVisual[2]);
 
         _buttons[3] = new Button(() => throw new Exception("test2"));
         _buttonVisual[3] = new Panel(SaveLoad<RichText>.Load("hub_skill").Content).Expand();
-        _layout["Root"]["Gameplay"]["Management"]["Skill"].Update( _buttonVisual[3]);
+        _buttonLayouts[3] = _layout["Root"]["Gameplay"]["Management"]["Skill"];
+        _buttonLayouts[3].Update( _buttonVisual[3]);
 
         _buttons[4] = new Button(() => throw new Exception("team"));
         _buttonVisual[4] = new Panel(SaveLoad<RichText>.Load("hub_team").Content).Expand();
-        _layout["Root"]["Gameplay"]["Management"]["Team"].Update(_buttonVisual[4]);
+        _buttonLayouts[4] = _layout["Root"]["Gameplay"]["Management"]["Team"];
+        _buttonLayouts[4].Update(_buttonVisual[4]);
 
         _buttons[5] = new Button(() => throw new Exception("save"));
         _buttonVisual[5] = new Panel(SaveLoad<RichText>.Load("hub_save").Content).Expand();
-        _layout["Root"]["Misc"]["SaveExit"]["Save"].Update(_buttonVisual[5]);
+        _buttonLayouts[5] = _layout["Root"]["Misc"]["SaveExit"]["Save"];
+        _buttonLayouts[5].Update(_buttonVisual[5]);
 
-        _buttons[6] = new Button(() => throw new Exception("exit"));
+        _buttons[6] = new Button(Exit);
         _buttonVisual[6] = new Panel(SaveLoad<RichText>.Load("hub_exit").Content).Expand();
-        _layout["Root"]["Misc"]["SaveExit"]["Exit"].Update(_buttonVisual[6]);
+        _buttonLayouts[6] = _layout["Root"]["Misc"]["SaveExit"]["Exit"];
+        _buttonLayouts[6].Update(_buttonVisual[6]);
 
         _layout["Root"]["Misc"]["Title"].Update(new Panel(location.Name).Expand());
         _layout["Root"]["Misc"]["Description"].Update(new Panel(location.Description).Expand());
@@ -96,32 +106,45 @@ public class HubMenu : Menu
     {
         base.OnAfterInitialize();
 
-        Select();
+        Select(1);
+    }
+
+    private void Fight()
+    {
+        Program.Scene = new GameplayScene(_save, "Title");
+        Stop();
     }
 
     private void Exit()
     {
+        Program.Scene = new MainMenuScene();
         Stop();
     }
 
     public override void OnAfterStop()
     {
         base.OnAfterStop();
-
-        Program.Scene = new NewGameScene(_save);
+        Program.Scene.Start();
     }
 
-    private void Select()
+    private void Select(int offset)
     {
+        _previousIndex = _selectedIndex;
+        _selectedIndex += offset;
+
         for (int i = 0; i < _buttons.Length; i++)
         {
             if (i == _selectedIndex && !_buttons[i].IsSelected)
             {
+                _buttonVisual[i].BorderStyle = Color.Green;
+                _buttonLayouts[i].Update(_buttonVisual[i]);
                 _buttons[i].Select();
             }
 
-            if (i != _selectedIndex && _buttons[i].IsSelected)
+            if (i == _previousIndex && _buttons[i].IsSelected)
             {
+                _buttonVisual[i].BorderStyle = Color.White;
+                _buttonLayouts[i].Update(_buttonVisual[i]);
                 _buttons[i].Deselect();
             }
         }
@@ -136,26 +159,26 @@ public class HubMenu : Menu
     {
         base.OnUpdate();
 
-        var key = Console.ReadKey(true);
-        if (key.Key != ConsoleKey.None)
+        if (Console.KeyAvailable)
         {
-            if (key.Key == ConsoleKey.Enter)
+            var key = Console.ReadKey(true);
+            if (key.Key != ConsoleKey.None)
             {
-                ConfirmSelect();
-            }
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    ConfirmSelect();
+                }
 
-            if (key.Key == ConsoleKey.W)
-            {
-                _selectedIndex--;
-                Select();
-            }
+                if (key.Key == ConsoleKey.W)
+                {
+                    Select(-1);
+                }
 
-            if (key.Key == ConsoleKey.S)
-            {
-                _selectedIndex++;
-                Select();
+                if (key.Key == ConsoleKey.S)
+                {
+                    Select(1);
+                }
             }
         }
-        
     }
 }

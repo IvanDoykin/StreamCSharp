@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-public static class SaveLoad<T> where T : class
+﻿public static class SaveLoad<T> where T : class
 {
     private static readonly Dictionary<Type, string> typeToDirectory = new Dictionary<Type, string>()
     {

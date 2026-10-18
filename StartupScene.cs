@@ -16,11 +16,7 @@ public class StartupScene : IScene
     private const int beat = 400;    
     private const int halfBeat = 200;
 
-    public StartupScene()
-    {
-    }
-
-    public async Task Play()
+    public void Start()
     {
         var image = new CanvasImage("logo.png");
         AnsiConsole.Write(image);
@@ -42,6 +38,9 @@ public class StartupScene : IScene
         PlayNote(F5, halfBeat);
         PlayNote(G5, halfBeat);
         PlayNote(A5, beat * 3);
+
+        Program.Scene = new MainMenuScene();
+        Program.Scene.Start();
     }
 
     private void PlayNote(int frequency, int duration)

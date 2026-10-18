@@ -1,10 +1,9 @@
 ﻿using Spectre.Console;
 
-public class MainMenu
+public class MainMenu : Menu
 {
-    private readonly string[] _menuNames = new string[]{"Новая игра", "Загрузить", "Выйти" };
+    private readonly string[] _menuNames = new string[] { "Новая игра", "Загрузить", "Выйти" };
 
-    private Layout _layout;
     private Panel _emptyPanel;
 
     private Table _menuTable;
@@ -12,13 +11,7 @@ public class MainMenu
 
     private int _selectedIndex = 0;
 
-    public MainMenu()
-    {
-        InitializeLayout();
-        Start();
-    }
-
-    private void InitializeLayout()
+    protected override void InitializeLayout()
     {
         _layout = new Layout("Root")
            .SplitColumns(
@@ -28,11 +21,35 @@ public class MainMenu
                 new Layout("Empty3").Ratio(1),
                 new Layout("MenuRow").Ratio(1),
                 new Layout("Empty4").Ratio(1)
-            ), 
+            ),
             new Layout("Empty2").Ratio(2)
          );
 
         Reset();
+    }
+
+    public override void OnUpdate()
+    {
+        base.OnUpdate();
+
+        ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
+
+        if (Console.KeyAvailable)
+        {
+            keyInfo = Console.ReadKey(true);
+            if (keyInfo.Key == ConsoleKey.W)
+            {
+                SelectUp();
+            }
+            if (keyInfo.Key == ConsoleKey.S)
+            {
+                SelectDown();
+            }
+            if (keyInfo.Key == ConsoleKey.Enter)
+            {
+                Stop();
+            }
+        }
     }
 
     public int GetSelectedIndex()
@@ -72,33 +89,8 @@ public class MainMenu
             {
                 _menuTable.AddRow(new Panel(_menuNames[i]) { Width = 40, BorderStyle = Color.White });
             }
-        }    
+        }
         _menuPanel = new Panel(_menuTable).Header("Gladiator").Expand();
         _layout["MenuColumn"]["MenuRow"].Update(_menuPanel);
-    }
-
-    private void Start()
-    {
-        AnsiConsole.Live(_layout)
-            .Start(ctx =>
-            {
-                ctx.Refresh();
-                ConsoleKeyInfo keyInfo = new ConsoleKeyInfo();
-                do
-                { 
-                    keyInfo = Console.ReadKey(true);
-                    if (keyInfo.Key == ConsoleKey.W)
-                    {
-                        SelectUp();
-                        ctx.Refresh();
-                    }
-                    if (keyInfo.Key == ConsoleKey.S)
-                    {
-                        SelectDown();
-                        ctx.Refresh();
-                    }
-                }
-                while (keyInfo.Key != ConsoleKey.Enter);
-            });
     }
 }

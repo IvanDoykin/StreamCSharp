@@ -5,6 +5,11 @@ public abstract class Menu
     private bool _destroyed = false;
     protected Layout _layout;
 
+    public Menu()
+    {
+        Start();
+    }
+
     protected abstract void InitializeLayout();
 
     public void Start()
@@ -13,18 +18,14 @@ public abstract class Menu
         InitializeLayout();
         OnAfterInitialize();
 
-        Task.Run(() =>
-        {
-            while (!_destroyed)
-            {
-                OnUpdate();
-            }
-        });
         AnsiConsole.Live(_layout)
             .Start(ctx =>
             {
-                ctx.Refresh();
-                while (!_destroyed) Thread.Sleep(1);
+                while (!_destroyed)
+                {
+                    OnUpdate();
+                    ctx.Refresh();
+                }
             });
 
         OnAfterStop();

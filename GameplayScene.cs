@@ -10,17 +10,29 @@
     private TurnPrinter _turnPrinter = new TurnPrinter();
     private SkillMenu _skillMenu = new SkillMenu();
 
-    public GameplayScene(string arenaName)
+    private PlayerSave _save;
+    private string _arenaName;
+
+    public GameplayScene(PlayerSave save, string arenaName)
+    {
+        _save = save;
+        _arenaName = arenaName;
+    }
+
+    public void Start()
     {
         Task.Run(() =>
         {
             Thread.Sleep(1500);
-            Arena arena = new Arena(_gameplayLogPrinter, _unitsPrinter, _statsPrinter, _vitalsPrinter, _turnPrinter, _skillsPrinter, SaveLoad<ArenaModel>.Load(arenaName), _skillMenu);
+            Arena arena = new Arena(_gameplayLogPrinter, _unitsPrinter, _statsPrinter, _vitalsPrinter, _turnPrinter, _skillsPrinter, SaveLoad<ArenaModel>.Load(_arenaName), _skillMenu);
             arena.Start();
 
             LevelHasFinished?.Invoke(arena.State);
         });
 
         GameplayRender render = new GameplayRender(this, _gameplayLogPrinter, _unitsPrinter, _statsPrinter, _vitalsPrinter, _skillsPrinter, _turnPrinter, _skillMenu);
+
+        Program.Scene = new HubScene(_save);
+        Program.Scene.Start();
     }
 }
