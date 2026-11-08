@@ -2,13 +2,11 @@
 
 public abstract class Menu
 {
+    private bool _confirmed = true;
+    public bool Confirmed => _confirmed;
+
     private bool _destroyed = false;
     protected Layout _layout;
-
-    public Menu()
-    {
-        Start();
-    }
 
     protected abstract void InitializeLayout();
 
@@ -31,8 +29,16 @@ public abstract class Menu
         OnAfterStop();
     }
 
-    public void Stop()
+    public void Confirm()
     {
+        _confirmed = true;
+        OnBeforeStop();
+        _destroyed = true;
+    }
+
+    public void Discard()
+    {
+        _confirmed = false;
         OnBeforeStop();
         _destroyed = true;
     }

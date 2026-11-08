@@ -31,14 +31,14 @@
         _menu.Update("Attack", _bodyPartNames);
         if (!_menu.TryGetChoice(out int selectedIndex))
         {
-            printer.Print(new LogContext("Умение было прервано."));
+            printer.Print(new GameplayLogContext("Умение было прервано."));
             return false;
         }    
         
         BodyPartName selectedBodyPart = (BodyPartName)Enum.Parse(typeof(BodyPartName), _bodyPartNames[selectedIndex]);
         Random random = new Random();
         var damage = UnitUtility.GetFlatDamage(_origin.BaseDamage, _origin, _targets[0]);
-        LogContext context = new LogContext($"{_origin.Model.Name} атаковал {_targets[0].Model.Name} с уроном {damage} в часть тела: {selectedBodyPart.ToString()}", ConsoleColor.DarkRed);
+        GameplayLogContext context = new GameplayLogContext($"{_origin.Model.Name} атаковал {_targets[0].Model.Name} с уроном {damage} в часть тела: {selectedBodyPart.ToString()}", ConsoleColor.DarkRed);
         printer.Print(context);
 
         if (0.7 > random.NextDouble())

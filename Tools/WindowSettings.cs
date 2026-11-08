@@ -45,12 +45,9 @@ public static class WindowSettings
         csbi.cbSize = (uint)Marshal.SizeOf(csbi);
         GetConsoleScreenBufferInfoEx(consoleHandle, ref csbi);
 
-        // Set the buffer size to match the current window size
-        // This removes the need for a scrollbar
         csbi.dwSize.X = (short)(csbi.srWindow.Right - csbi.srWindow.Left + 1);
         csbi.dwSize.Y = (short)(csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
 
-        // Ensure the cbSize is correctly set for the P/Invoke call
         SetConsoleScreenBufferInfoEx(consoleHandle, ref csbi);
     }
 
@@ -102,4 +99,5 @@ public static class WindowSettings
 
     [DllImport("kernel32.dll", ExactSpelling = true)]
     private static extern IntPtr GetConsoleWindow();
+
 }

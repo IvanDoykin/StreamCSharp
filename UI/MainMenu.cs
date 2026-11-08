@@ -10,6 +10,7 @@ public class MainMenu : Menu
     private Panel _menuPanel;
 
     private int _selectedIndex = 0;
+    public int SelectedIndex => _selectedIndex;
 
     protected override void InitializeLayout()
     {
@@ -47,14 +48,9 @@ public class MainMenu : Menu
             }
             if (keyInfo.Key == ConsoleKey.Enter)
             {
-                Stop();
+                Confirm();
             }
         }
-    }
-
-    public int GetSelectedIndex()
-    {
-        return _selectedIndex;
     }
 
     private void SelectUp()

@@ -19,11 +19,11 @@ public class ArenaModel
     {
         for (int i = 0; i < playerUnitsName.Count; i++)
         {
-            _playerUnits.Add(UnitUtility.CreateUnit(SaveLoad<UnitSave>.Load(playerUnitsName[i]), playerUnitsPlacements[i]));
+            _playerUnits.Add(UnitUtility.CreateUnit(JsonStorage<UnitSave>.Load(playerUnitsName[i]), playerUnitsPlacements[i]));
         }
         for (int i = 0; i < enemyUnitsName.Count; i++)
         {
-            _enemyUnits.Add(UnitUtility.CreateUnit(SaveLoad<UnitSave>.Load(enemyUnitsName[i]), enemyUnitsPlacements[i]));
+            _enemyUnits.Add(UnitUtility.CreateUnit(JsonStorage<UnitSave>.Load(enemyUnitsName[i]), enemyUnitsPlacements[i]));
         }
     }
 }

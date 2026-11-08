@@ -10,5 +10,6 @@
     public void Start()
     {
         var menu = new NewGameMenu(_save);
+        menu.Start();
     }
 }

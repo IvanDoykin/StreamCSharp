@@ -19,7 +19,7 @@ public class UnitSave
         Skills = new List<SkillSave>(skills);
 
         UnitModelName = unitModelName;
-        _unitModel = SaveLoad<UnitModel>.Load(UnitModelName);
+        _unitModel = JsonStorage<UnitModel>.Load(UnitModelName);
     }
 }
 
@@ -37,7 +37,7 @@ public struct ArmorSave
         ArmorName = armorName;
         BodyPart = bodyPart;
 
-        _armor = SaveLoad<IArmor>.Load(armorName);
+        _armor = JsonStorage<IArmor>.Load(armorName);
     }
 }
 
@@ -55,7 +55,7 @@ public struct WeaponSave
         WeaponName = weaponName;
         BodyPart = bodyPart;
 
-        _weapon = SaveLoad<IWeapon>.Load(weaponName);
+        _weapon = JsonStorage<IWeapon>.Load(weaponName);
     }
 }
 
@@ -70,6 +70,6 @@ public struct SkillSave
     public SkillSave(string skillName)
     {
         SkillName = skillName;
-        _skill = SaveLoad<ISkill>.Load(skillName);
+        _skill = JsonStorage<ISkill>.Load(skillName);
     }
 }

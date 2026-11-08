@@ -16,6 +16,6 @@ public class PlayerSave
     {
         Name = name;
         Units = new List<UnitSave>();
-        Units.Add(SaveLoad<UnitSave>.Load("Тимур"));
+        Units.Add(JsonStorage<UnitSave>.Load("Тимур"));
     }
 }

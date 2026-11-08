@@ -22,4 +22,15 @@
         File.WriteAllText(path, data);
         Logger.Log($"File {path} saved successfully");
     }
+
+    public static void Delete(string path)
+    {
+        if (!File.Exists(path))
+        {
+            Logger.LogError($"File {path} is not exist");
+            return;
+        }
+
+        File.Delete(path);
+    }
 }

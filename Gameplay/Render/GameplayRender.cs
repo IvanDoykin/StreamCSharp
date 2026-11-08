@@ -60,6 +60,8 @@ public class GameplayRender
         _turnPrinter.Reset();
         _skillsPrinter.Reset();
 
+        Console.ReadKey(true);
+
         _destroy = true;
     }
 

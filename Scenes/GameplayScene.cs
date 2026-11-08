@@ -24,7 +24,7 @@
         Task.Run(() =>
         {
             Thread.Sleep(1500);
-            Arena arena = new Arena(_gameplayLogPrinter, _unitsPrinter, _statsPrinter, _vitalsPrinter, _turnPrinter, _skillsPrinter, SaveLoad<ArenaModel>.Load(_arenaName), _skillMenu);
+            Arena arena = new Arena(_gameplayLogPrinter, _unitsPrinter, _statsPrinter, _vitalsPrinter, _turnPrinter, _skillsPrinter, JsonStorage<ArenaModel>.Load(_arenaName), _skillMenu);
             arena.Start();
 
             LevelHasFinished?.Invoke(arena.State);

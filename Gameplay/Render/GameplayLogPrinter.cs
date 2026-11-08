@@ -29,15 +29,17 @@ public class GameplayLogPrinter : IPrinter
     {
         if (state == BattleState.PlayerWins)
         {
-            Print(new LogContext("Player win", ConsoleColor.Green));
+            Print(new GameplayLogContext("Player win", ConsoleColor.Green));
         }
         else if (state == BattleState.EnemyWins)
         {
-            Print(new LogContext("Enemy win", ConsoleColor.Red));
+            Print(new GameplayLogContext("Enemy win", ConsoleColor.Red));
         }
+
+        Print(new GameplayLogContext("Press any key to exit", ConsoleColor.White));
     }
 
-    public void Print(LogContext context)
+    public void Print(GameplayLogContext context)
     {
         context.Text = context.Text.Replace("[", "[[").Replace("]", "]]");
 

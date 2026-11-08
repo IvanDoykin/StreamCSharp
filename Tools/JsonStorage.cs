@@ -1,4 +1,4 @@
-﻿public static class SaveLoad<T> where T : class
+﻿public static class JsonStorage<T> where T : class
 {
     private static readonly Dictionary<Type, string> typeToDirectory = new Dictionary<Type, string>()
     {
@@ -31,7 +31,7 @@
         }
     }
 
-    public static string[] GetAllSaves()
+    public static string[] GetAll()
     {
         string savesPath = typeToDirectory[typeof(T)];
         string[] saves = Directory.GetFiles(savesPath);
@@ -88,6 +88,18 @@
         else
         {
             Logger.LogError($"Save error {typeof(T).Name} ({name})");
+        }
+    }
+
+    public static void Delete(string name)
+    {
+        if (TryGetDirectory(out string directory))
+        {
+            FileIO.Delete(Path.Combine(directory, name + ".json"));
+        }
+        else
+        {
+            Logger.LogError($"Delete error {typeof(T).Name} ({name})");
         }
     }
 

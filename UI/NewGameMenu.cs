@@ -43,7 +43,7 @@ public class NewGameMenu : Menu
         {
             if (Console.ReadKey(true).Key == ConsoleKey.Enter)
             {
-                Stop();
+                Confirm();
             }
         }
     }

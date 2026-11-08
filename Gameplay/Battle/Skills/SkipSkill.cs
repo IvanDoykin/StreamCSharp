@@ -34,7 +34,7 @@ public class SkipSkill : ISkill, ISelfSkill
             return false;
         }
 
-        printer.Print(new LogContext("Пропускаем ход"));
+        printer.Print(new GameplayLogContext("Пропускаем ход"));
         return true;
     }
 }

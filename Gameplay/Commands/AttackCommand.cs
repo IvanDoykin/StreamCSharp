@@ -20,7 +20,7 @@
     public void Execute()
     {
         Random random = new Random();
-        LogContext context = new LogContext($"{_attacker.Model.Name} атаковал {_defender.Model.Name} с уроном {_damage}.", ConsoleColor.DarkRed);
+        GameplayLogContext context = new GameplayLogContext($"{_attacker.Model.Name} атаковал {_defender.Model.Name} с уроном {_damage}.", ConsoleColor.DarkRed);
         _printer.Print(context);
 
         if (_probability > random.NextDouble())

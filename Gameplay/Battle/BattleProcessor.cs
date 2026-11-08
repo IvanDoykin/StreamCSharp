@@ -76,7 +76,7 @@ public class BattleProcessor
                 }
                 else
                 {
-                    _gameplayLogPrinter.Print(new LogContext("Нужно выбрать юнита для взаимодействия с ним.", ConsoleColor.Red));
+                    _gameplayLogPrinter.Print(new GameplayLogContext("Нужно выбрать юнита для взаимодействия с ним.", ConsoleColor.Red));
                 }
             }
         }
@@ -120,7 +120,7 @@ public class BattleProcessor
                 }
                 if (keyInfo.Key == ConsoleKey.Escape)
                 {
-                    _gameplayLogPrinter.Print(new LogContext($"Ход от юнита {attackerUnit.Model.Name} к юниту {selectedUnit.Model.Name} был прерван"));
+                    _gameplayLogPrinter.Print(new GameplayLogContext($"Ход от юнита {attackerUnit.Model.Name} к юниту {selectedUnit.Model.Name} был прерван"));
                     return false;
                 }
 

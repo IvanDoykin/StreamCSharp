@@ -11,5 +11,6 @@
     public void Start()
     {
         _menu = new HubMenu(_save);
+        _menu.Start();
     }
 }

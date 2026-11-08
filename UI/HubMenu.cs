@@ -9,7 +9,7 @@ public class HubMenu : Menu
     private int _selectedIndex = -1;
     private int _previousIndex = -1;
 
-    public HubMenu(PlayerSave save)
+    public HubMenu(PlayerSave save) : base()
     {
         _save = save;
     }
@@ -58,40 +58,40 @@ public class HubMenu : Menu
                    )
            );
 
-        var location = SaveLoad<LocationSave>.Load("Londinium");
+        var location = JsonStorage<LocationSave>.Load("Londinium");
 
         _buttons[0] = new Button(Fight);
-        _buttonVisual[0] = new Panel(SaveLoad<RichText>.Load("hub_fight").Content).Expand();
+        _buttonVisual[0] = new Panel(JsonStorage<RichText>.Load("hub_fight").Content).Expand();
         _buttonLayouts[0] = _layout["Root"]["Gameplay"]["General"]["Fight"];
         _buttonLayouts[0].Update(_buttonVisual[0]);
 
         _buttons[1] = new Button(() => throw new Exception("shop"));
-        _buttonVisual[1] = new Panel(SaveLoad<RichText>.Load("hub_shop").Content).Expand();
+        _buttonVisual[1] = new Panel(JsonStorage<RichText>.Load("hub_shop").Content).Expand();
         _buttonLayouts[1] = _layout["Root"]["Gameplay"]["General"]["Shop"];
         _buttonLayouts[1].Update(_buttonVisual[1]);
 
         _buttons[2] = new Button(Exit);
-        _buttonVisual[2] = new Panel(SaveLoad<RichText>.Load("hub_inventory").Content).Expand();
+        _buttonVisual[2] = new Panel(JsonStorage<RichText>.Load("hub_inventory").Content).Expand();
         _buttonLayouts[2] = _layout["Root"]["Gameplay"]["Management"]["Inventory"];
         _buttonLayouts[2].Update(_buttonVisual[2]);
 
         _buttons[3] = new Button(() => throw new Exception("test2"));
-        _buttonVisual[3] = new Panel(SaveLoad<RichText>.Load("hub_skill").Content).Expand();
+        _buttonVisual[3] = new Panel(JsonStorage<RichText>.Load("hub_skill").Content).Expand();
         _buttonLayouts[3] = _layout["Root"]["Gameplay"]["Management"]["Skill"];
         _buttonLayouts[3].Update( _buttonVisual[3]);
 
         _buttons[4] = new Button(() => throw new Exception("team"));
-        _buttonVisual[4] = new Panel(SaveLoad<RichText>.Load("hub_team").Content).Expand();
+        _buttonVisual[4] = new Panel(JsonStorage<RichText>.Load("hub_team").Content).Expand();
         _buttonLayouts[4] = _layout["Root"]["Gameplay"]["Management"]["Team"];
         _buttonLayouts[4].Update(_buttonVisual[4]);
 
         _buttons[5] = new Button(() => throw new Exception("save"));
-        _buttonVisual[5] = new Panel(SaveLoad<RichText>.Load("hub_save").Content).Expand();
+        _buttonVisual[5] = new Panel(JsonStorage<RichText>.Load("hub_save").Content).Expand();
         _buttonLayouts[5] = _layout["Root"]["Misc"]["SaveExit"]["Save"];
         _buttonLayouts[5].Update(_buttonVisual[5]);
 
         _buttons[6] = new Button(Exit);
-        _buttonVisual[6] = new Panel(SaveLoad<RichText>.Load("hub_exit").Content).Expand();
+        _buttonVisual[6] = new Panel(JsonStorage<RichText>.Load("hub_exit").Content).Expand();
         _buttonLayouts[6] = _layout["Root"]["Misc"]["SaveExit"]["Exit"];
         _buttonLayouts[6].Update(_buttonVisual[6]);
 
@@ -112,13 +112,13 @@ public class HubMenu : Menu
     private void Fight()
     {
         Program.Scene = new GameplayScene(_save, "Title");
-        Stop();
+        Confirm();
     }
 
     private void Exit()
     {
         Program.Scene = new MainMenuScene();
-        Stop();
+        Confirm();
     }
 
     public override void OnAfterStop()
